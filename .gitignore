@@ -1,0 +1,7 @@
+/extra
+/Dockerfile
+/go.mod
+/go.sum
+/gossip-gateway.tgz
+/protoc
+/protoCommands.txt

@@ -1,0 +1,55 @@
+version: "3.8"
+services:
+  gossip_gateway:
+    image: shikhary10/gossip-gateway
+    container_name: gateway1
+    ports:
+      - 8000:8000
+    environment:
+      - MONGO_USERNAME=rootuser
+      - MONGO_PASSWORD=rootpass
+      - MONGO_LOC_IP=20.189.124.44
+      - RABBITMQ_USERNAME=guest
+      - RABBITMQ_PASSWORD=guest
+      - RABBITMQ_LOC_IP=20.189.124.44
+      - REDIS_LOC_IP=20.189.124.44
+  gossip_engine1:
+    image: shikhary10/gossip-engine
+    container_name: engine1
+    environment:
+      - MONGO_USERNAME=rootuser
+      - MONGO_PASSWORD=rootpass
+      - MONGO_LOC_IP=20.189.124.44
+      - RABBITMQ_USERNAME=guest
+      - RABBITMQ_PASSWORD=guest
+      - RABBITMQ_LOC_IP=20.189.124.44
+      - REDIS_LOC_IP=20.189.124.44
+  gossip_engine2:
+    image: shikhary10/gossip-engine
+    container_name: engine2
+    environment:
+      - MONGO_USERNAME=rootuser
+      - MONGO_PASSWORD=rootpass
+      - MONGO_LOC_IP=20.189.124.44
+      - RABBITMQ_USERNAME=guest
+      - RABBITMQ_PASSWORD=guest
+      - RABBITMQ_LOC_IP=20.189.124.44
+      - REDIS_LOC_IP=20.189.124.44
+  gossip-api:
+    image: shikhary10/gossip-api
+    container_name: api
+    ports:
+      - 8080:8080
+    environment:
+      - MONGO_USERNAME=rootuser
+      - MONGO_PASSWORD=rootpass
+      - MONGO_LOC_IP=20.189.124.44
+      - RABBITMQ_USERNAME=guest
+      - RABBITMQ_PASSWORD=guest
+      - RABBITMQ_LOC_IP=20.189.124.44
+      - REDIS_LOC_IP=20.189.124.44
+  gossip-otp:
+    image: shikhary10/gossip-otp
+    container_name: otp
+    environment:
+      - RABBITMQ_LOC_IP=20.189.124.44
