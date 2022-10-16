@@ -1,0 +1,46 @@
+syntax = "proto3";
+
+package main;
+
+option go_package="./gbp";
+
+message ChatPayload {
+    string Tid = 1;
+    string Sid = 2;
+    string Msg = 3;
+    int32 Tp = 4;
+}
+
+message Transport {
+    bytes Msg = 1;
+    string Id = 2;
+    int32 Tp = 3;
+}
+
+message MsgFormat {
+    string Sid = 1;
+    string Msg = 2;
+    string Mloc = 3;
+    int32 Tp = 4;
+}
+
+message RecvNotify {
+    string UId = 1;
+    string MId = 2;
+    int32 Tp = 3;
+}
+
+message ClientName {
+    string UId = 1;
+    string MId = 2;
+}
+
+message SendNotify {
+    string TMid = 1;
+    bytes data = 2;
+}
+
+message ChatAck {
+    string MId = 1;
+    string MLoc = 2;
+}

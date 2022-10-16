@@ -1,0 +1,9 @@
+/extra
+/docker-compose.yaml
+/Dockerfile
+/go.mod
+/go.sum
+/gossip-gateway.tgz
+/protoc
+/protoCommands.txt
+/.env
