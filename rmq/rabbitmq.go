@@ -7,7 +7,6 @@ import (
 	"log"
 	"math/rand"
 
-	"github.com/fatih/color"
 	"github.com/streadway/amqp"
 )
 
@@ -53,7 +52,8 @@ func (r *RMQ) Init(rmqIP string, username string, password string, name string) 
 	if err != nil {
 		log.Println(err.Error())
 	}
-	color.Green("RMQ connected!")
+	redisAction.ShowSucces("RabbitMQ Connected", false)
+	// color.Green("RMQ connected!")
 	// fmt.Println("RMQ connected!")
 }
 
@@ -80,7 +80,7 @@ func (r *RMQ) getEngineChannel() (string, error) {
 	fmt.Println("LEN: ", len(names))
 	if len(names) == 0 {
 		fmt.Println("[WARNING] : No engine connected!")
-		return "", errors.New("no engine connected!")
+		return "", errors.New("no engine connected")
 	}
 	randomIndex := rand.Intn(len(names))
 	pick := names[randomIndex]

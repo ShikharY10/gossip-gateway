@@ -257,6 +257,19 @@ func showError(heading string, err error) {
 	fmt.Println("")
 }
 
+func showSucces(message string, major bool) {
+	var messagePrinter func(format string, a ...interface{})
+	if major {
+		messagePrinter = color.New(color.FgBlue, color.Bold, color.Underline).PrintfFunc()
+	} else {
+		messagePrinter = color.New(color.FgWhite).PrintfFunc()
+	}
+	head := color.New(color.FgGreen).PrintfFunc()
+	head("[SUCCESS] -> ")
+	messagePrinter(message)
+	fmt.Println("")
+}
+
 func main() {
 	// LOADING ENVIRONMENT VARIABLES
 	godotenv.Load()
@@ -357,6 +370,7 @@ func main() {
 
 	// starting websocket handler
 	http.HandleFunc("/", m.wsHandler)
+	showSucces("Starting Gateway At Port 8000", true)
 	if err := http.ListenAndServe(":8000", nil); err != nil {
 		log.Fatal(err)
 	}

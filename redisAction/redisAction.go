@@ -11,6 +11,19 @@ import (
 	"github.com/go-redis/redis"
 )
 
+func ShowSucces(message string, major bool) {
+	var messagePrinter func(format string, a ...interface{})
+	if major {
+		messagePrinter = color.New(color.FgBlue, color.Bold, color.Underline).PrintfFunc()
+	} else {
+		messagePrinter = color.New(color.FgWhite).PrintfFunc()
+	}
+	head := color.New(color.FgGreen).PrintfFunc()
+	head("[SUCCESS] -> ")
+	messagePrinter(message)
+	fmt.Println("")
+}
+
 type Redis struct {
 	Client *redis.Client
 }
@@ -21,16 +34,10 @@ func (r *Redis) Init(redisIP string) {
 		Password: "",
 		DB:       0,
 	})
-	s := client.Ping()
-	fmt.Println(s.String())
-
-	client.Set("name", "Shikhar Yadav", 0)
-	res := client.Get("name")
-	fmt.Println(res.Result())
+	client.Ping()
 	r.Client = client
-	color.Green("Redis connected!")
-	// color.GreenString
-	// fmt.Println("Redis client connected!")
+	ShowSucces("Redis Connected", false)
+	// color.Green("Redis connected!")
 }
 
 func (r *Redis) GetGatewayName() []string {

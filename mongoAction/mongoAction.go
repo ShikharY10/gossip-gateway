@@ -6,12 +6,12 @@ import (
 	"errors"
 	"fmt"
 	"gbGATEWAY/gbp"
+	"gbGATEWAY/redisAction"
 	"gbGATEWAY/utils"
 	"log"
 	"strconv"
 	"time"
 
-	"github.com/fatih/color"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -49,7 +49,8 @@ func (m *Mongo) Init(mongoIP string, username string, password string) {
 
 	m.UserCollection = uCollection
 	m.MsgCollection = mCollection
-	color.Green("Mongo connected!")
+	redisAction.ShowSucces("MongoDB connected", false)
+	// color.Green("Mongo connected!")
 	// fmt.Println("Mongo client connected!")
 }
 
