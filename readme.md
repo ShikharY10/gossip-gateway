@@ -12,4 +12,4 @@
   <h1>GossiP WebSocket Gateway Service</h1>
 </div>
 
-It is to establish real-time communication between client to client and client to server.
+It is used to establish real-time communication between client to client and client to server.
