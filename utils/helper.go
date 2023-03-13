@@ -2,9 +2,10 @@ package utils
 
 import (
 	crand "crypto/rand"
-	"fmt"
-	"io"
+	"log"
 	"math/big"
+	"net/http"
+	"syscall"
 )
 
 func GenerateRandomId() string {
@@ -14,19 +15,21 @@ func GenerateRandomId() string {
 	return s
 }
 
-func GenerateOTP(max int) string {
-	var table = [...]byte{'1', '2', '3', '4', '5', '6', '7', '8', '9', '0'}
-	b := make([]byte, max)
-	n, err := io.ReadAtLeast(crand.Reader, b, max)
-	if n != max {
+// Increase resources limitations
+func IncreaseResources() {
+	var rLimit syscall.Rlimit
+	if err := syscall.Getrlimit(syscall.RLIMIT_NOFILE, &rLimit); err != nil {
 		panic(err)
 	}
-	for i := 0; i < len(b); i++ {
-		b[i] = table[int(b[i])%len(table)]
+	rLimit.Cur = rLimit.Max
+	if err := syscall.Setrlimit(syscall.RLIMIT_NOFILE, &rLimit); err != nil {
+		panic(err)
 	}
-	return string(b)
 }
 
-func SendOTP(number string, otp string) {
-	fmt.Println("OPT for " + number + " is: " + otp)
+// Enable pprof hooks
+func EnablePProf() {
+	if err := http.ListenAndServe("localhost:6060", nil); err != nil {
+		log.Fatalf("pprof failed: %v", err)
+	}
 }
