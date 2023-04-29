@@ -7,7 +7,7 @@ import (
 )
 
 func WebsocketRoute(router *gin.Engine, controller controllers.Controller) {
-	secure := router.Group("/secure")
+	secure := router.Group("/")
 	secure.Use(controller.Middleware.APIV3Authorization())
 	secure.GET("/connect", controller.WebSocketHandler)
 }

@@ -18,7 +18,7 @@ type Controller struct {
 }
 
 func (ctrl *Controller) WebSocketHandler(c *gin.Context) {
-	id := c.Value("uuid").(string)
+	id := c.Value("id").(string)
 	err := ctrl.Handler.Database.IsUserRegistered(id)
 	if err != nil {
 		return

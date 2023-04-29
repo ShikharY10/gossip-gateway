@@ -58,15 +58,17 @@ func main() {
 		log.Fatal(err)
 	}
 
+	cache := &handler.CacheHandler{
+		RedisClient: db.RedisDB,
+		Logger:      logger,
+	}
+
 	handle := handler.Handler{
 		Database: &handler.DataBaseHandler{
 			Mongo:  *db.MongoDB,
 			Logger: logger,
 		},
-		Cache: &handler.CacheHandler{
-			RedisClient: db.RedisDB,
-			Logger:      logger,
-		},
+		Cache: cache,
 		Queue: &handler.QueueHandler{
 			Queue:   *queue,
 			Clients: Epoll.Clients,
@@ -75,14 +77,12 @@ func main() {
 		Env: ENV,
 	}
 
-	middleWare := middleware.Middleware{
-		SecretKey: []byte(ENV.JWTSecret),
-	}
+	middleWare := middleware.CreateMiddleware([]byte(ENV.JWT_ACCESS_TOKEN_SECRET_KEY), cache)
 
 	controller := controllers.Controller{
 		Epoll:      Epoll,
 		Handler:    &handle,
-		Middleware: &middleWare,
+		Middleware: middleWare,
 	}
 
 	go handle.Queue.Consume()

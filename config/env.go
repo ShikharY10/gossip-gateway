@@ -9,24 +9,25 @@ import (
 )
 
 type ENV struct {
-	MongoDBConnectionMethod string // manual
-	MongoDBPort             string // 27017
-	MongoDBHost             string // 127.0.0.1
-	MongoDBUsername         string // rootuser
-	MongoDBPassword         string // rootpass
-	MongoDBConnectionString string // mongodb connection string will be used when MongoDBConnectionMethod is set to auto
-	RedisHost               string // 127.0.0.1
-	RedisPort               string // 6379
-	RabbitMQHost            string // 127.0.0.1
-	RabbitMQPort            string // 5672
-	RabbitMQUsername        string // guest
-	RabbitMQPassword        string // guest
-	GatewayPort             string // 6001
-	GateWayName             string // GT____
-	GateWayMode             string // debug
-	JWTSecret               string // abcdefghijklmnopqrstuvwxyz
-	LogServerHost           string // 127.0.0.1
-	LogServerPort           string // 6002
+	MongoDBConnectionMethod     string // manual
+	MongoDBPort                 string // 27017
+	MongoDBHost                 string // 127.0.0.1
+	MongoDBUsername             string // rootuser
+	MongoDBPassword             string // rootpass
+	MongoDBConnectionString     string // mongodb connection string will be used when MongoDBConnectionMethod is set to auto
+	REDIS_HOST                  string // 127.0.0.1
+	REDIS_PORT                  string // 6379
+	RabbitMQHost                string // 127.0.0.1
+	RabbitMQPort                string // 5672
+	RabbitMQUsername            string // guest
+	RabbitMQPassword            string // guest
+	GatewayPort                 string // 6001
+	GateWayName                 string // GT____
+	GateWayMode                 string // debug
+	JWTSecret                   string // abcdefghijklmnopqrstuvwxyz
+	LogServerHost               string // 127.0.0.1
+	LogServerPort               string // 6002
+	JWT_ACCESS_TOKEN_SECRET_KEY string
 }
 
 // Generate fixed size byte array
@@ -92,16 +93,16 @@ func LoadENV() *ENV {
 
 	value, found = os.LookupEnv("REDIS_HOST")
 	if found {
-		env.RedisHost = value
+		env.REDIS_HOST = value
 	} else {
-		env.RedisHost = "127.0.0.1"
+		env.REDIS_HOST = "127.0.0.1"
 	}
 
 	value, found = os.LookupEnv("REDIS_PORT")
 	if found {
-		env.RedisPort = value
+		env.REDIS_PORT = value
 	} else {
-		env.RedisPort = "6379"
+		env.REDIS_PORT = "6379"
 	}
 
 	value, found = os.LookupEnv("RabbitMQHost")
@@ -172,6 +173,13 @@ func LoadENV() *ENV {
 		env.LogServerPort = value
 	} else {
 		env.LogServerPort = "10223"
+	}
+
+	value, found = os.LookupEnv("JWT_ACCESS_TOKEN_SECRET_KEY")
+	if found {
+		env.JWT_ACCESS_TOKEN_SECRET_KEY = value
+	} else {
+		env.JWT_ACCESS_TOKEN_SECRET_KEY = "982u3923jhdwhe3fjdw30fj02j3ijwef023jfijwjf802j300"
 	}
 
 	return &env

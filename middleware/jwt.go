@@ -3,6 +3,7 @@ package middleware
 import (
 	"errors"
 	"fmt"
+	"gbGATEWAY/handler"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -10,15 +11,24 @@ import (
 )
 
 type Middleware struct {
-	SecretKey []byte
+	jWT_ACCESS_TOKEN_SECRET_KEY []byte
+	Cache                       *handler.CacheHandler
 }
 
-func varifyJWT(token string, secretekey []byte) (jwt.MapClaims, error) {
+func CreateMiddleware(accessToken []byte, cache *handler.CacheHandler) *Middleware {
+	return &Middleware{
+		jWT_ACCESS_TOKEN_SECRET_KEY: accessToken,
+		Cache:                       cache,
+	}
+}
+
+// varifies JWT access token and the claims the where set while creating the token
+func (mw *Middleware) VarifyAccessToken(token string) (claim jwt.MapClaims, err error) {
 	newToken, err := jwt.Parse(token, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, errors.New("something went wrong")
 		}
-		return secretekey, nil
+		return mw.jWT_ACCESS_TOKEN_SECRET_KEY, nil
 	})
 	if err != nil {
 		return nil, err
@@ -33,27 +43,34 @@ func varifyJWT(token string, secretekey []byte) (jwt.MapClaims, error) {
 
 func (mw *Middleware) APIV3Authorization() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		fmt.Println("New Request=== " + c.Request.URL.Path + " ===")
+		fmt.Println("New auth request")
 		token := c.Query("token")
-		fmt.Println("Token: ", token)
 		if token == "" {
 			c.AbortWithStatusJSON(http.StatusForbidden, "token not found")
 			return
 		} else {
-			claim, err := varifyJWT(token, mw.SecretKey)
+			claim, err := mw.VarifyAccessToken(token)
 			if err != nil {
-				c.Header("error", err.Error())
-				c.AbortWithStatusJSON(400, "invalid JWT Token, "+err.Error())
-				return
-			} else {
-				data := map[string]interface{}{
-					"uuid":     claim["uuid"].(string),
-					"username": claim["username"].(string),
-					"role":     claim["role"].(string),
+				if err.Error() == "Token is expired" {
+					c.AbortWithStatusJSON(401, err.Error())
+				} else {
+					c.AbortWithStatusJSON(400, err.Error())
 				}
-				c.Keys = data
-				fmt.Println("=== Request Varified ===")
-				c.Next()
+			} else {
+				isTokenValid := mw.Cache.IsTokenValid(claim["id"].(string), token, "access")
+				if isTokenValid {
+					data := map[string]interface{}{
+						"id":       claim["id"].(string),
+						"username": claim["username"].(string),
+						"role":     claim["role"].(string),
+					}
+					c.Keys = data
+					fmt.Println("New auth reques varified")
+					c.Next()
+				} else {
+					c.AbortWithStatus(401)
+				}
+
 			}
 		}
 	}

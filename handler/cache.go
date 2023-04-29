@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"gbGATEWAY/utils"
 	"math/rand"
+	"strings"
 	"time"
 
 	"github.com/go-redis/redis"
@@ -77,4 +78,23 @@ func (cache *CacheHandler) RemoveUserConnectNode(uuid string) error {
 	b64Uuid := utils.Encode(hash)
 	result := cache.RedisClient.Del(b64Uuid)
 	return result.Err()
+}
+
+// Return true if token is not expired and saved hash of part of token is match is supplied token hash.
+func (cache *CacheHandler) IsTokenValid(id string, token string, tokenType string) bool {
+	var key string
+	if tokenType == "access" {
+		key = id + ".accessTokenExpiry"
+	} else if tokenType == "refresh" {
+		key = id + ".refreshTokenExpiry"
+	}
+
+	if key == "" {
+		return false
+	}
+
+	hash := strings.Split(token, ".")[2]
+
+	result := cache.RedisClient.Get(key)
+	return result.Val() == hash
 }
