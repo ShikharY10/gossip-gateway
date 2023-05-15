@@ -4,6 +4,7 @@ import (
 	"crypto/sha1"
 	"errors"
 	"fmt"
+	"gbGATEWAY/admin"
 	"gbGATEWAY/utils"
 	"math/rand"
 	"strings"
@@ -14,7 +15,7 @@ import (
 
 type CacheHandler struct {
 	RedisClient *redis.Client
-	Logger      *utils.Logger
+	Logger      *admin.Logger
 }
 
 // func (cache *CacheHandler) GetRandomEngineName() (string, error) {
@@ -31,7 +32,7 @@ type CacheHandler struct {
 // }
 
 func (cache *CacheHandler) GetRandomEngineName() (string, error) {
-	ress := cache.RedisClient.SInter("engines")
+	ress := cache.RedisClient.SInter("engine")
 	engines, err := ress.Result()
 	if err != nil || len(engines) == 0 {
 		return "", errors.New("no engine found")
