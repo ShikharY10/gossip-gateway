@@ -2,13 +2,13 @@ package main
 
 import (
 	"fmt"
+	"gbGATEWAY/admin"
 	"gbGATEWAY/config"
 	"gbGATEWAY/controllers"
 	"gbGATEWAY/epoll"
 	"gbGATEWAY/handler"
 	"gbGATEWAY/middleware"
 	"gbGATEWAY/routes"
-	"gbGATEWAY/utils"
 	"log"
 
 	"github.com/gin-gonic/gin"
@@ -23,14 +23,17 @@ func removeUsers(channel chan string, cache *handler.CacheHandler) {
 func readDataFromClient(channel chan []byte, handler *handler.Handler) {
 
 	for job := range channel {
-		fmt.Println("Recv Data: ", string(job))
 		engine, err := handler.Cache.GetRandomEngineName()
+
 		if err != nil {
 			// ToDo: Log this error
 			fmt.Println("ERROR: ", err.Error())
 			continue
 		}
-		handler.Queue.Produce(engine, job)
+		err = handler.Queue.Produce(engine, job)
+		if err != nil {
+			log.Println("[PRODUCE ERROR] : ", err.Error())
+		}
 	}
 }
 
@@ -38,7 +41,7 @@ func main() {
 	// LOADING ENVIRONMENT VARIABLES
 	ENV := config.LoadENV()
 
-	logger, err := utils.InitializeLogger(ENV, "gateway")
+	logger, err := admin.InitializeLogger(ENV, "gateway")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -93,8 +96,6 @@ func main() {
 	router := gin.New()
 	routes.WebsocketRoute(router, controller)
 
-	handle.Cache.RegisterNode(ENV.GateWayName)
-
-	utils.ShowSucces("Starting Gateway at PORT => ["+ENV.GatewayPort+"]", true)
+	admin.ShowSucces("Starting Gateway at PORT => ["+ENV.GatewayPort+"]", true)
 	router.Run(":" + ENV.GatewayPort)
 }
