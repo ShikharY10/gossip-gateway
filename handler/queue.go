@@ -1,9 +1,9 @@
 package handler
 
 import (
+	"gbGATEWAY/admin"
 	"gbGATEWAY/config"
 	"gbGATEWAY/schema"
-	"gbGATEWAY/utils"
 
 	"github.com/gorilla/websocket"
 	"github.com/streadway/amqp"
@@ -13,10 +13,11 @@ import (
 type QueueHandler struct {
 	Queue   config.Queue
 	Clients map[string]*websocket.Conn
-	Logger  *utils.Logger
+	Logger  *admin.Logger
 }
 
 func (queue *QueueHandler) Produce(nodeName string, data []byte) error {
+
 	err := queue.Queue.Channel.Publish(
 		"",
 		nodeName,

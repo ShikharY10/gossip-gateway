@@ -2,8 +2,8 @@ package handler
 
 import (
 	"context"
+	"gbGATEWAY/admin"
 	"gbGATEWAY/config"
-	"gbGATEWAY/utils"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -11,7 +11,7 @@ import (
 
 type DataBaseHandler struct {
 	Mongo  config.MongoDB
-	Logger *utils.Logger
+	Logger *admin.Logger
 }
 
 // if operation find no document it will return ErrNoDocuments error.

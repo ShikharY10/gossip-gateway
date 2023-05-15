@@ -2,7 +2,6 @@ package middleware
 
 import (
 	"errors"
-	"fmt"
 	"gbGATEWAY/handler"
 	"net/http"
 
@@ -43,7 +42,6 @@ func (mw *Middleware) VarifyAccessToken(token string) (claim jwt.MapClaims, err 
 
 func (mw *Middleware) APIV3Authorization() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		fmt.Println("New auth request")
 		token := c.Query("token")
 		if token == "" {
 			c.AbortWithStatusJSON(http.StatusForbidden, "token not found")
@@ -65,7 +63,6 @@ func (mw *Middleware) APIV3Authorization() gin.HandlerFunc {
 						"role":     claim["role"].(string),
 					}
 					c.Keys = data
-					fmt.Println("New auth reques varified")
 					c.Next()
 				} else {
 					c.AbortWithStatus(401)
