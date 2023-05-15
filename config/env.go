@@ -2,7 +2,10 @@ package config
 
 import (
 	"crypto/rand"
+	"crypto/sha1"
 	"encoding/base64"
+	"fmt"
+	"gbGATEWAY/utils"
 	"os"
 
 	"github.com/joho/godotenv"
@@ -144,7 +147,12 @@ func LoadENV() *ENV {
 	if found {
 		env.GateWayName = value
 	} else {
-		env.GateWayName = "GT_" + encode(generateRandomId(10))
+		hash := sha1.New()
+		hash.Write(utils.GenerateAesKey(10))
+		hashDigest := hash.Sum(nil)
+
+		hashString := fmt.Sprintf("%x", hashDigest)
+		env.GateWayName = "GT_" + hashString
 	}
 
 	value, found = os.LookupEnv("GATEWAY_MODE")
