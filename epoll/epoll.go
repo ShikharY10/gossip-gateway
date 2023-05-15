@@ -1,7 +1,7 @@
 package epoll
 
 import (
-	"gbGATEWAY/utils"
+	"gbGATEWAY/admin"
 	"log"
 	"reflect"
 	"sync"
@@ -18,7 +18,7 @@ type EPOLL struct {
 	Lock          *sync.RWMutex
 	DataPipeline  chan []byte
 	ClosePipeline chan string
-	Logger        *utils.Logger
+	Logger        *admin.Logger
 }
 
 func (e *EPOLL) websocketFD(conn *websocket.Conn) int {
@@ -29,7 +29,7 @@ func (e *EPOLL) websocketFD(conn *websocket.Conn) int {
 	return int(pfdVal.FieldByName("Sysfd").Int())
 }
 
-func InitiatEpoll(logger *utils.Logger) (*EPOLL, error) {
+func InitiatEpoll(logger *admin.Logger) (*EPOLL, error) {
 	fd, err := unix.EpollCreate1(0)
 	if err != nil {
 		return nil, err
@@ -53,8 +53,9 @@ func (e *EPOLL) Remove(conn websocket.Conn) error {
 		return err
 	}
 	e.Lock.Lock()
-	defer e.Lock.Unlock()
+
 	delete(e.Connections, fd)
+	e.Lock.Unlock()
 	if len(e.Connections)%100 == 0 {
 		log.Printf("Total number of connections: %v", len(e.Connections))
 	}
@@ -92,8 +93,8 @@ func (e *EPOLL) Add(conn *websocket.Conn) error {
 		return err
 	}
 	e.Lock.Lock()
-	defer e.Lock.Unlock()
 	e.Connections[fd] = conn
+	e.Lock.Unlock()
 	return nil
 }
 
@@ -121,8 +122,8 @@ func (e *EPOLL) StartEpollMonitoring() {
 				if userId != "" {
 					e.ClosePipeline <- userId
 					e.Lock.Lock()
-					defer e.Lock.Unlock()
 					delete(e.Clients, userId)
+					e.Lock.Unlock()
 				}
 			} else {
 				e.DataPipeline <- msg
